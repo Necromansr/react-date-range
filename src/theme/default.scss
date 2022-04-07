@@ -178,7 +178,7 @@
 .rdrDayToday:not(.rdrDayPassive) {
   .rdrInRange, .rdrStartEdge, .rdrEndEdge, .rdrSelected{
     & ~ .rdrDayNumber span:after{
-      background: #fff;
+      background: #FFE600;
     }
   }
 }
@@ -303,7 +303,7 @@
   border-right: solid 1px #eff2f7;
   background: #fff;
   .rdrStaticRangeSelected{
-    color: currentColor;
+    color: #000 !important;
     font-weight: 600;
   }
 }

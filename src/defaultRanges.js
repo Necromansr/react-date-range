@@ -8,7 +8,6 @@ import {
   startOfWeek,
   endOfWeek,
   isSameDay,
-  differenceInCalendarDays,
 } from 'date-fns';
 
 const defineds = {
@@ -56,7 +55,6 @@ export const defaultStaticRanges = createStaticRanges([
       endDate: defineds.endOfYesterday,
     }),
   },
-
   {
     label: 'Эта неделя',
     range: () => ({
@@ -69,6 +67,21 @@ export const defaultStaticRanges = createStaticRanges([
     range: () => ({
       startDate: defineds.startOfLastWeek,
       endDate: defineds.endOfLastWeek,
+    }),
+  },
+
+  {
+    label: 'Последние 7 дней',
+    range: () => ({
+      startDate: addDays(defineds.endOfToday, -6),
+      endDate: defineds.endOfToday,
+    }),
+  },
+  {
+    label: 'Последние 14 дней',
+    range: () => ({
+      startDate: addDays(defineds.endOfToday, -13),
+      endDate: defineds.endOfToday,
     }),
   },
   {
@@ -85,6 +98,20 @@ export const defaultStaticRanges = createStaticRanges([
       endDate: defineds.endOfLastMonth,
     }),
   },
+  {
+    label: 'Последние 30 дней',
+    range: () => ({
+      startDate: addMonths(defineds.endOfToday, -1),
+      endDate: defineds.endOfToday,
+    }),
+  },
+  {
+    label: 'Всё время',
+    range: () => ({
+      startDate: 1,
+      endDate: defineds.endOfToday,
+    }),
+  }
 ]);
 
 export const defaultInputRanges = [
