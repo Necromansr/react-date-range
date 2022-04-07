@@ -59,7 +59,7 @@ export const defaultStaticRanges = createStaticRanges([
     label: 'Эта неделя',
     range: () => ({
       startDate: defineds.startOfWeek,
-      endDate: defineds.endOfWeek,
+      endDate: defineds.endOfToday,
     }),
   },
   {
@@ -88,7 +88,7 @@ export const defaultStaticRanges = createStaticRanges([
     label: 'Этот месяц',
     range: () => ({
       startDate: defineds.startOfMonth,
-      endDate: defineds.endOfMonth,
+      endDate: defineds.endOfToday,
     }),
   },
   {
