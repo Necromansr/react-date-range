@@ -1,0 +1,67 @@
+.calendar-dropdown {
+  position: relative;
+  cursor: pointer;
+  z-index: 99999;
+  color: #787885;
+  font-weight: 500;
+  width: 80px;
+      transform: translate3d(0px, 0px, 0px);
+      will-change: transform,
+      scroll-position;
+  > div:first-child {
+    width: 100%;
+    text-align: center;
+    height: 22px;
+    line-height: 22px;
+    &:before {
+      background-image: url('./arrow-down.svg');
+      content: "";
+      width: 10px;
+      height: 5px;
+      position: absolute;
+      right: 1px;
+      top: 8px;
+      opacity: .8;
+    }
+  }
+  .calendar-list {
+        transform: translate3d(0px, 0px, 0px);
+        will-change: transform, scroll-position;
+    position: absolute;
+    background: #fff;
+    overflow: hidden;
+    width: 100%;
+    left: 0;
+    top: 22px;
+    text-align: center;
+    box-shadow: 4px 4px 9px rgb(0 0 0 / 15%);
+    .select-btn:before {
+      content: "";
+      width: 4px;
+      height: 4px;
+      border-radius: 100%;
+      position: absolute;
+      left: -10px;
+      background-color: #787885;
+      top: auto;
+    }
+    .calendar-item {
+      height: 22px;
+      line-height: 22px;
+      position: relative;
+      color: #000;
+      margin-left: 15px;
+      display: flex;
+      font-weight: 300;
+      font-family: 'Roboto',
+      sans-serif;
+      align-items: center;
+      &:hover {
+        opacity: 0.5;
+      }
+      &:last-child {
+    margin-bottom: 5px;
+      }
+    } 
+  }
+}

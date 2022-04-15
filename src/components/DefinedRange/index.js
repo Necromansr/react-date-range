@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styles from '../../styles';
-import { defaultInputRanges, defaultStaticRanges } from '../../defaultRanges';
+import { staticDate } from '../../defaultRanges';
 import { rangeShape } from '../DayCell';
-import InputRangeField from '../InputRangeField';
+// import InputRangeField from '../InputRangeField';
 import cx from 'classnames';
 
 class DefinedRange extends Component {
@@ -12,8 +12,8 @@ class DefinedRange extends Component {
     this.state = {
       rangeOffset: 0,
       focusedInput: -1,
-      index: null
     };
+
   }
 
   handleRangeChange = range => {
@@ -50,13 +50,14 @@ class DefinedRange extends Component {
       headerContent,
       footerContent,
       onPreviewChange,
-      inputRanges,
-      staticRanges,
+      // inputRanges,
+      // staticRanges,
       ranges,
       renderStaticRangeLabel,
       rangeColors,
       className,
     } = this.props;
+    let staticRanges = staticDate(this.props.minDate || 1);
 
     return (
       <div className={cx(styles.definedRangesWrapper, className)}>
@@ -71,20 +72,19 @@ class DefinedRange extends Component {
             } else {
               labelContent = staticRange.label;
             }
-
             return (
               <button
                 type="button"
-                className={styles.staticRange +' '+ (this.state.index === i ? styles.staticRangeSelected : '')}
+                className={styles.staticRange +' '+ (this.props.menu === i ? styles.staticRangeSelected : '')}
                 style={{
-                  color: this.state.index === i
-                    ? selectedRange.color || rangeColors[focusedRangeIndex]
+                  color: this.props.menu === i
+                    ? selectedRange?.color || rangeColors[focusedRangeIndex]
                     : null,
                 }}
                 key={i}
                 onClick={() => {
                   this.handleRangeChange(staticRange.range(this.props))
-                  this.setState({index: i})
+                  this.props.changeMenu(i);
                 }}
                 onFocus={() => onPreviewChange && onPreviewChange(staticRange.range(this.props))}
                 onMouseOver={() =>
@@ -134,8 +134,8 @@ DefinedRange.propTypes = {
 };
 
 DefinedRange.defaultProps = {
-  inputRanges: defaultInputRanges,
-  staticRanges: defaultStaticRanges,
+  // inputRanges: defaultInputRanges,
+  // staticRanges: defaultStaticRanges,
   ranges: [],
   rangeColors: ['#d4d4d4', '#3ecf8e', '#fed14c'],
   focusedRange: [0, 0],

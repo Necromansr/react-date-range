@@ -132,6 +132,7 @@ class DateRange extends Component {
         onPreviewChange={value => {
           this.updatePreview(value ? this.calcNewSelection(value) : null);
         }}
+        changeMenu={this.props.changeMenu || ((e) => { })}
         {...this.props}
         displayMode="dateRange"
         className={classnames(this.styles.dateRangeWrapper, this.props.className)}

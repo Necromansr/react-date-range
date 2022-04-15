@@ -5,7 +5,7 @@ import Month from '../Month';
 import DateInput from '../DateInput';
 import { calcFocusDate, generateStyles, getMonthDisplayRange } from '../../utils';
 import classnames from 'classnames';
-import ReactList from 'react-list';
+import ReactList from 'react-calendar-list';
 import { shallowEqualObjects } from 'shallow-equal';
 import {
   addMonths,
@@ -30,6 +30,8 @@ import {
 import defaultLocale from 'date-fns/locale/en-US';
 import coreStyles from '../../styles';
 import { ariaLabelsShape } from '../../accessibility';
+import { Dropdown } from '../Dropdown';
+let space = null;
 
 class Calendar extends PureComponent {
   constructor(props, context) {
@@ -48,6 +50,7 @@ class Calendar extends PureComponent {
         disablePreview: false,
       },
       scrollArea: this.calcScrollArea(props),
+      types: '',
     };
   }
   getMonthNames() {
@@ -90,18 +93,19 @@ class Calendar extends PureComponent {
       return;
     }
     const targetMonthIndex = differenceInCalendarMonths(date, props.minDate, this.dateOptions);
-    const visibleMonths = this.list.getVisibleRange();
-    if (preventUnnecessary && visibleMonths.includes(targetMonthIndex)) return;
+    const visibleMonths = this.list.getVisibleRange(200);
+    // if (preventUnnecessary && visibleMonths.includes(targetMonthIndex)) return;
     this.isFirstRender = true;
+    
     this.list.scrollTo(targetMonthIndex);
     this.setState({ focusedDate: date });
   };
   updateShownDate = (props = this.props) => {
     const newProps = props.scroll.enabled
       ? {
-          ...props,
-          months: this.list.getVisibleRange().length,
-        }
+        ...props,
+        months: this.list.getVisibleRange().length,
+      }
       : props;
     const newFocus = calcFocusDate(this.state.focusedDate, newProps);
     this.focusToDate(newFocus, newProps);
@@ -173,11 +177,23 @@ class Calendar extends PureComponent {
     const { onShownDateChange, minDate } = this.props;
     const { focusedDate } = this.state;
     const { isFirstRender } = this;
-
-    const visibleMonths = this.list.getVisibleRange();
+    const visibleMonths = this.list.getVisibleRange(200);
     // prevent scroll jump with wrong visible value
-    if (visibleMonths[0] === undefined) return;
-    const visibleMonth = addMonths(minDate, visibleMonths[0] || 0);
+    // if (visibleMonths[0] === undefined) return;
+    const visibleMonth = addMonths(minDate, visibleMonths[0] || 0)
+
+    // if (space === null && this.list.scrollParent.scrollTop < 30) {
+    //   space = 30;
+    // } else if (space === null && Object.keys(this.list.cache).length > 4) {
+    //   space = Object.entries(this.list.cache).slice(0, Object.keys(this.list.cache).indexOf(visibleMonths[0])).reduce((x, y) => x + y[1], 0) + 30;
+    // }
+    // console.log(Object.entries(this.list.cache).slice(0, Object.keys(this.list.cache).indexOf(visibleMonths[0])));
+    // // console.log(this.list.cache.reduce((x,y) => x + y, 0));
+      // (Math.round(this.list.scrollParent.scrollTop + Object.keys(this.list.cache).length * ((this.list.scrollParent.scrollHeight - (this.list.scrollParent.scrollHeight - this.list.scrollParent.clientHeight)) / Object.keys(this.list.cache).length)) !== this.list.scrollParent.scrollHeight ? ((visibleMonths[0] + visibleMonths[1]) / 2) : visibleMonths[1]) || 0);
+    // (Math.round(this.list.scrollParent.scrollTop + Object.keys(this.list.cache).length * ((this.list.scrollParent.scrollHeight - (this.list.scrollParent.scrollHeight - this.list.scrollParent.clientHeight)) / Object.keys(this.list.cache).length)) !== this.list.scrollParent.scrollHeight ?
+    //   visibleMonths[0] : visibleMonths[1]) || 0);
+
+
     const isFocusedToDifferent = !isSameMonth(visibleMonth, focusedDate);
     if (isFocusedToDifferent && !isFirstRender) {
       this.setState({ focusedDate: visibleMonth });
@@ -192,7 +208,7 @@ class Calendar extends PureComponent {
     const styles = this.styles;
     return (
       <div onMouseUp={e => e.stopPropagation()} className={styles.monthAndYearWrapper}>
-        {showMonthArrow ? (
+        {/* {showMonthArrow ? (
           <button
             type="button"
             className={classnames(styles.nextPrevButton, styles.prevButton)}
@@ -200,24 +216,59 @@ class Calendar extends PureComponent {
             aria-label={ariaLabels.prevButton}>
             <i />
           </button>
-        ) : null}
+        ) : null} */}
         {showMonthAndYearPickers ? (
           <span className={styles.monthAndYearPickers}>
             <span className={styles.monthPicker}>
-              <select
-                value={focusedDate.getMonth()}
-                onChange={e => changeShownDate(e.target.value, 'setMonth')}
+              <Dropdown
+                width={90}
+                types={this.state.types}
+                value={lowerYearLimit === focusedDate.getFullYear() ? focusedDate.getMonth() - this.state.monthNames.indexOf(format(minDate, 'LLLL', { locale: this.props.locale })) : focusedDate.getMonth()}
+                data={(upperYearLimit === focusedDate.getFullYear() ? this.state.monthNames.slice(0, this.state.monthNames.indexOf(format(maxDate, 'LLLL', { locale: this.props.locale })) + 1) :
+                  lowerYearLimit === focusedDate.getFullYear() ? this.state.monthNames.slice(this.state.monthNames.indexOf(format(minDate, 'LLLL', { locale: this.props.locale })),) :
+                    this.state.monthNames)}
+                onChange={e => {
+                  changeShownDate(lowerYearLimit === focusedDate.getFullYear() ? parseInt(e) + parseInt(this.state.monthNames.indexOf(format(minDate, 'LLLL', { locale: this.props.locale }))) : e, 'setMonth');
+                }}
+                type='month'
+                changeType={type =>
+                  this.setState({ types: type })
+                }
+              />
+              {/* {console.log(focusedDate.getMonth())} */}
+              {/* <select
+                value={lowerYearLimit === focusedDate.getFullYear()  ? focusedDate.getMonth() - this.state.monthNames.indexOf(format(minDate, 'LLLL', { locale: this.props.locale })) : focusedDate.getMonth()}
+                onChange={e => {
+                  console.log(e.target.value)
+                  changeShownDate(lowerYearLimit === focusedDate.getFullYear() ? parseInt(e.target.value) + parseInt(this.state.monthNames.indexOf(format(minDate, 'LLLL', { locale: this.props.locale }))) : e.target.value, 'setMonth')
+                }}
                 aria-label={ariaLabels.monthPicker}>
-                {this.state.monthNames.map((monthName, i) => (
+                {(upperYearLimit === focusedDate.getFullYear() ? this.state.monthNames.slice(0, this.state.monthNames.indexOf(format(maxDate, 'LLLL', { locale: this.props.locale })) + 1) :
+                  lowerYearLimit === focusedDate.getFullYear() ? this.state.monthNames.slice(this.state.monthNames.indexOf(format(minDate, 'LLLL', { locale: this.props.locale })), ) :
+                    this.state.monthNames).map((monthName, i) => (
                   <option key={i} value={i}>
                     {monthName}
                   </option>
                 ))}
-              </select>
+              </select> */}
             </span>
             <span className={styles.monthAndYearDivider} />
             <span className={styles.yearPicker}>
-              <select
+              
+              <Dropdown value={focusedDate.getFullYear()}
+                width={60}
+                types={this.state.types}
+                data={new Array(upperYearLimit - lowerYearLimit + 1).fill(upperYearLimit).map((val, index) => val - index).reverse()}
+                onChange={e => {
+                  changeShownDate(e, 'setYear')
+                }}
+                type='year'
+                changeType={type =>
+                  this.setState({ types: type })
+                }
+              />
+
+              {/* <select
                 value={focusedDate.getFullYear()}
                 onChange={e => changeShownDate(e.target.value, 'setYear')}
                 aria-label={ariaLabels.yearPicker}>
@@ -231,7 +282,7 @@ class Calendar extends PureComponent {
                       </option>
                     );
                   })}
-              </select>
+              </select> */}
             </span>
           </span>
         ) : (
@@ -239,7 +290,7 @@ class Calendar extends PureComponent {
             {this.state.monthNames[focusedDate.getMonth()]} {focusedDate.getFullYear()}
           </span>
         )}
-        {showMonthArrow ? (
+        {/* {showMonthArrow ? (
           <button
             type="button"
             className={classnames(styles.nextPrevButton, styles.nextButton)}
@@ -247,7 +298,7 @@ class Calendar extends PureComponent {
             aria-label={ariaLabels.nextButton}>
             <i />
           </button>
-        ) : null}
+        ) : null} */}
       </div>
     );
   };
@@ -440,7 +491,7 @@ class Calendar extends PureComponent {
               onMouseLeave={() => onPreviewChange && onPreviewChange()}
               style={{
                 width: scrollArea.calendarWidth + 11,
-                height: scrollArea.calendarHeight + 11,
+                height: 318,
               }}
               onScroll={this.handleScroll}>
               <ReactList
@@ -449,9 +500,12 @@ class Calendar extends PureComponent {
                   addDays(startOfMonth(minDate), -1),
                   this.dateOptions
                 )}
-                treshold={500}
+                treshold={800}
                 type="variable"
-                ref={target => (this.list = target)}
+                ref={target => {
+                  (this.list = target)
+                }}
+                useTranslate3d={true}
                 itemSizeEstimator={this.estimateMonthSize}
                 axis={isVertical ? 'y' : 'x'}
                 itemRenderer={(index, key) => {
@@ -499,6 +553,7 @@ class Calendar extends PureComponent {
               }
               return (
                 <Month
+                  changeMenu={this.props.changeMenu || ((e) => { })}
                   {...this.props}
                   onPreviewChange={onPreviewChange || this.updatePreview}
                   preview={preview || this.state.preview}
@@ -527,10 +582,11 @@ class Calendar extends PureComponent {
 }
 
 Calendar.defaultProps = {
+  // menu: '1',
   showMonthArrow: true,
   showMonthAndYearPickers: true,
   disabledDates: [],
-  disabledDay: () => {},
+  disabledDay: () => { },
   classNames: {},
   locale: defaultLocale,
   ranges: [],
@@ -562,6 +618,8 @@ Calendar.defaultProps = {
 };
 
 Calendar.propTypes = {
+  // menu: PropTypes.string,
+  // onChangeMenu: PropTypes.func,
   showMonthArrow: PropTypes.bool,
   showMonthAndYearPickers: PropTypes.bool,
   disabledDates: PropTypes.array,

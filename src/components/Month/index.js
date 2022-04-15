@@ -56,6 +56,7 @@ class Month extends PureComponent {
         };
       });
     }
+
     const showPreview = this.props.showPreview && !drag.disablePreview;
     return (
       <div className={styles.month} style={this.props.style}>
@@ -67,6 +68,7 @@ class Month extends PureComponent {
         {this.props.showWeekDays &&
           renderWeekdays(styles, this.props.dateOptions, this.props.weekdayDisplayFormat)}
         <div className={styles.days} onMouseLeave={this.props.onMouseLeave}>
+     
           {eachDayOfInterval({ start: monthDisplay.start, end: monthDisplay.end }).map(
             (day, index) => {
               const isStartOfMonth = isSameDay(day, monthDisplay.startDateOfMonth);
@@ -82,6 +84,7 @@ class Month extends PureComponent {
                   {...this.props}
                   ranges={ranges}
                   day={day}
+                  changeMenu={this.props.changeMenu || ((e) => { })}
                   preview={showPreview ? this.props.preview : null}
                   isWeekend={isWeekend(day, this.props.dateOptions)}
                   isToday={isSameDay(day, now)}
