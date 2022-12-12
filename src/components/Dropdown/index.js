@@ -38,7 +38,7 @@ export const Dropdown = ({ value, data, onChange, type, types, width }) => {
       <div className='calendar-list' style={open ? { transition: '0.25s', top: 22 } : { height: 0, top: 0 }}>
         <SimpleBar style={{maxHeight: 95}} autoHide={false}>
           {data.map((x, index) => (
-            <div className={x === (type === 'month' ? data[value] : value) ? 'calendar-item select-btn' : 'calendar-item'} onClick={e => { onChange(type === 'month' ? index : x); setOpen(false) }}>{x}</div>
+            <div key={index} className={x === (type === 'month' ? data[value] : value) ? 'calendar-item select-btn' : 'calendar-item'} onClick={e => { onChange(type === 'month' ? index : x); setOpen(false) }}>{x}</div>
           ))}
         </SimpleBar>
       </div>
